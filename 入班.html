@@ -70,7 +70,6 @@
         </div>
         <div>
           <h1 class="font-bold text-lg leading-tight tracking-wide">智慧入班配課排程系統</h1>
-          <p class="text-xs text-indigo-200">專為大型活動・畢業旅行課務排程設計</p>
         </div>
       </div>
 
@@ -142,7 +141,6 @@
             <label class="mt-4 border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer bg-slate-50 hover:bg-emerald-50/40 transition-colors group">
               <i class="fa-solid fa-user-plus text-3xl text-slate-400 group-hover:text-emerald-600 mb-2 transition-colors"></i>
               <span class="text-sm font-semibold text-slate-700 group-hover:text-emerald-700">點擊上傳教師名冊檔 (教師名冊.xlsx)</span>
-              <span class="text-xs text-slate-400 mt-1">僅提取姓名與職務身分，自動排除流水號/卡號干擾</span>
               <input type="file" id="inputTeacherFile" accept=".xlsx, .xls" class="hidden" onchange="handleTeacherFile(this)">
             </label>
           </div>
@@ -231,7 +229,6 @@
             <i class="fa-solid fa-bus-simple text-indigo-600 text-base"></i>
             <div>
               <h2 class="font-bold text-slate-800 text-base">出隊不在校班級 / 年級設定 (畢旅・隔宿露營・戶外教學)</h2>
-              <p class="text-xs text-slate-400">系統將依此年級課表計算「科任老師因出隊而少上的節數」，並自動將該年級導師標記為隨隊出門</p>
             </div>
           </div>
           <span id="absentGradeBadge" class="text-xs px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 font-bold">目前設定：9 年級全體不在校</span>
@@ -241,9 +238,9 @@
           <div class="space-y-1.5 md:col-span-1">
             <label class="text-xs font-bold text-slate-700">出隊年級選擇</label>
             <select id="settingAbsentGrade" onchange="onAbsentGradeConfigChange()" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-xl bg-white font-medium focus:ring-2 focus:ring-indigo-500">
-              <option value="9" selected>九年級 (9 開頭全體班級，如畢業旅行)</option>
-              <option value="8">八年級 (8 開頭全體班級，如隔宿露營)</option>
-              <option value="7">七年級 (7 開頭全體班級，如戶外體驗)</option>
+              <option value="9" selected>九年級</option>
+              <option value="8">八年級</option>
+              <option value="7">七年級</option>
               <option value="custom">自訂指定班級 (手動輸入)</option>
             </select>
           </div>
@@ -275,8 +272,7 @@
           <label class="flex items-start space-x-3 p-3.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/20 cursor-pointer transition-colors bg-purple-50/30">
             <input type="checkbox" id="ruleExcludeSpecialClasses" checked class="mt-1 w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
             <div>
-              <span class="text-sm font-bold text-slate-800">各年級30以上特殊班不排</span>
-              <p class="text-xs text-slate-500 mt-0.5">730+、830+、930+ 為特殊/特教班，待代班級免排入班，導師亦不排代課</p>
+              <span class="text-sm font-bold text-slate-800">特殊班不排</span>
             </div>
           </label>
 
@@ -285,7 +281,6 @@
             <input type="checkbox" id="ruleExcludeAdmin" checked class="mt-1 w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
             <div>
               <span class="text-sm font-bold text-slate-800">行政人員不排</span>
-              <p class="text-xs text-slate-500 mt-0.5">主任、組長、校長、協助行政(協行)</p>
             </div>
           </label>
 
@@ -294,7 +289,6 @@
             <input type="checkbox" id="ruleExcludeSpecialEd" checked class="mt-1 w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
             <div>
               <span class="text-sm font-bold text-slate-800">學中 / 特教老師不排</span>
-              <p class="text-xs text-slate-500 mt-0.5">學習中心、資源班、特教班專責教師</p>
             </div>
           </label>
 
@@ -303,7 +297,6 @@
             <input type="checkbox" id="ruleExcludeGifted" checked class="mt-1 w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
             <div>
               <span class="text-sm font-bold text-slate-800">資優班教師不排</span>
-              <p class="text-xs text-slate-500 mt-0.5">數理資優、語文資優班專任導師</p>
             </div>
           </label>
         </div>
@@ -390,7 +383,7 @@
       <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
         <div class="flex items-center space-x-2 pb-3 mb-4 border-b border-slate-100">
           <i class="fa-solid fa-user-xmark text-rose-600 text-base"></i>
-          <h2 class="font-bold text-slate-800 text-base">指定個別教師不排 (產假、研習、差假等)</h2>
+          <h2 class="font-bold text-slate-800 text-base">指定個別教師不排</h2>
         </div>
 
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
