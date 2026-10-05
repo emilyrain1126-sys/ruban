@@ -141,6 +141,7 @@
             <label class="mt-4 border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer bg-slate-50 hover:bg-emerald-50/40 transition-colors group">
               <i class="fa-solid fa-user-plus text-3xl text-slate-400 group-hover:text-emerald-600 mb-2 transition-colors"></i>
               <span class="text-sm font-semibold text-slate-700 group-hover:text-emerald-700">點擊上傳教師名冊檔 (教師名冊.xlsx)</span>
+              <span class="text-xs text-slate-400 mt-1">僅提取姓名與職務身分，自動排除流水號/卡號干擾</span>
               <input type="file" id="inputTeacherFile" accept=".xlsx, .xls" class="hidden" onchange="handleTeacherFile(this)">
             </label>
           </div>
@@ -228,7 +229,7 @@
           <div class="flex items-center space-x-2">
             <i class="fa-solid fa-bus-simple text-indigo-600 text-base"></i>
             <div>
-              <h2 class="font-bold text-slate-800 text-base">出隊不在校班級 / 年級設定 (畢旅・隔宿露營・戶外教學)</h2>
+              <h2 class="font-bold text-slate-800 text-base">出隊不在校班級 / 年級設定 </h2>
             </div>
           </div>
           <span id="absentGradeBadge" class="text-xs px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 font-bold">目前設定：9 年級全體不在校</span>
@@ -267,16 +268,24 @@
           <h2 class="font-bold text-slate-800 text-base">快速身分排除規則 (不排入代課)</h2>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           <!-- Rule 1: 30+ Special Classes Homeroom / Classes Exclusion -->
           <label class="flex items-start space-x-3 p-3.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/20 cursor-pointer transition-colors bg-purple-50/30">
             <input type="checkbox" id="ruleExcludeSpecialClasses" checked class="mt-1 w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
             <div>
-              <span class="text-sm font-bold text-slate-800">特殊班不排</span>
+              <span class="text-sm font-bold text-slate-800">各年級30以上特殊班不排</span>
             </div>
           </label>
 
-          <!-- Rule 2: Administration -->
+          <!-- Rule 2: Code 600+ Exclusion -->
+          <label class="flex items-start space-x-3 p-3.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/20 cursor-pointer transition-colors bg-amber-50/40">
+            <input type="checkbox" id="ruleExcludeCode600Plus" checked class="mt-1 w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+            <div>
+              <span class="text-sm font-bold text-slate-800">教師代碼 600 以上不排</span>
+            </div>
+          </label>
+
+          <!-- Rule 3: Administration -->
           <label class="flex items-start space-x-3 p-3.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/20 cursor-pointer transition-colors">
             <input type="checkbox" id="ruleExcludeAdmin" checked class="mt-1 w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
             <div>
@@ -284,7 +293,7 @@
             </div>
           </label>
 
-          <!-- Rule 3: Special Education / Study Center -->
+          <!-- Rule 4: Special Education / Study Center -->
           <label class="flex items-start space-x-3 p-3.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/20 cursor-pointer transition-colors">
             <input type="checkbox" id="ruleExcludeSpecialEd" checked class="mt-1 w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
             <div>
@@ -292,7 +301,7 @@
             </div>
           </label>
 
-          <!-- Rule 4: Gifted Education -->
+          <!-- Rule 5: Gifted Education -->
           <label class="flex items-start space-x-3 p-3.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/20 cursor-pointer transition-colors">
             <input type="checkbox" id="ruleExcludeGifted" checked class="mt-1 w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
             <div>
@@ -383,7 +392,7 @@
       <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
         <div class="flex items-center space-x-2 pb-3 mb-4 border-b border-slate-100">
           <i class="fa-solid fa-user-xmark text-rose-600 text-base"></i>
-          <h2 class="font-bold text-slate-800 text-base">指定個別教師不排</h2>
+          <h2 class="font-bold text-slate-800 text-base">指定個別教師不排 (產假、研習、差假等)</h2>
         </div>
 
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -1994,6 +2003,7 @@
       }
 
       const excludeSpecialClasses = document.getElementById('ruleExcludeSpecialClasses') ? document.getElementById('ruleExcludeSpecialClasses').checked : true;
+      const excludeCode600Plus = document.getElementById('ruleExcludeCode600Plus') ? document.getElementById('ruleExcludeCode600Plus').checked : true;
       const excludeAdmin = document.getElementById('ruleExcludeAdmin').checked;
       const excludeSpecial = document.getElementById('ruleExcludeSpecialEd').checked;
       const excludeGifted = document.getElementById('ruleExcludeGifted').checked;
@@ -2014,9 +2024,25 @@
           return false;
         }
 
+        // Exclude teacher codes >= 600 (透過代碼欄位與課表字典雙向比對純數值)
+        if (excludeCode600Plus) {
+          const codeVal = t.code || state.sheet1NameToCode[t.name] || '';
+          const m = String(codeVal).match(/\d+/);
+          if (m) {
+            const codeNum = parseInt(m[0], 10);
+            if (!isNaN(codeNum) && codeNum >= 600) {
+              return false;
+            }
+          }
+        }
+
         const role = (t.role || '') + ' ' + (t.remarks || '');
         if (excludeAdmin) {
-          if (role.includes('主任') || role.includes('組長') || role.includes('校長') || role.includes('協行') || role.includes('協助行政')) return false;
+          // 主任、組長、校長不排；協行（協助行政）放行要排
+          const isPureAdmin = role.includes('主任') || role.includes('組長') || role.includes('校長');
+          if (isPureAdmin && !role.includes('協行') && !role.includes('協助行政')) {
+            return false;
+          }
         }
         if (excludeSpecial) {
           if (role.includes('學中') || role.includes('資源') || role.includes('特教') || role.includes('學習中心')) return false;
@@ -2408,6 +2434,14 @@
         const is9Homeroom = is9PrefixHomeroomTeacher(teacher);
         const isAbsent = is9Homeroom || isTeacherAbsentOnDate(teacher.name, targetClass.date, targetClass.weekday);
         const busy = isTeacherBusy(teacher, targetClass.weekday, targetClass.period);
+        
+        // 取得教師代碼數值
+        const codeVal = teacher.code || state.sheet1NameToCode[teacher.name] || '';
+        const m = String(codeVal).match(/\d+/);
+        const codeNum = m ? parseInt(m[0], 10) : null;
+        const exclude600Checked = document.getElementById('ruleExcludeCode600Plus') ? document.getElementById('ruleExcludeCode600Plus').checked : true;
+        const is600Plus = exclude600Checked && (codeNum !== null && codeNum >= 600);
+
         const load = currentLoad[teacher.name] || 0;
         const reduced = state.reducedClassesMap[teacher.name] || 0;
         const isCurrent = targetClass.assignedTeacher === teacher.name;
@@ -2422,6 +2456,8 @@
           statusBadgeOrBtn = `<span class="px-2.5 py-1 rounded-lg text-xs bg-amber-100 text-amber-800 font-bold flex items-center"><i class="fa-solid fa-plane-departure mr-1"></i>帶隊不在校 (不可排)</span>`;
         } else if (busy) {
           statusBadgeOrBtn = `<span class="px-2.5 py-1 rounded-lg text-xs bg-rose-100 text-rose-700 font-bold flex items-center"><i class="fa-solid fa-triangle-exclamation mr-1"></i>衝堂 (該節有課)</span>`;
+        } else if (is600Plus) {
+          statusBadgeOrBtn = `<span class="px-2.5 py-1 rounded-lg text-xs bg-slate-200 text-slate-700 font-semibold flex items-center">代碼 600 以上 (已排除)</span>`;
         } else {
           statusBadgeOrBtn = `<button onclick="confirmTeacherSwap('${teacher.name}', '${teacher.code}')" class="px-3 py-1 rounded-lg text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-sm">更換為此教師</button>`;
         }
